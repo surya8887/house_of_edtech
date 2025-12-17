@@ -6,7 +6,7 @@ export function getBaseUrl() {
 
   // Production (Vercel)
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    return `https://${process.env.NEXTAUTH_URL}`;
   }
 
   // Local development
