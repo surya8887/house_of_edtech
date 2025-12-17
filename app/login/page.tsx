@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,20 +11,25 @@ import GoogleButton from "@/components/auth/GoogleButton";
 import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   async function handleSubmit(formData: FormData) {
-    await signIn("credentials", {
+    const res = await signIn("credentials", {
       email: formData.get("email"),
       password: formData.get("password"),
-      callbackUrl: "/dashboard",
+      redirect: false, // ✅ IMPORTANT
     });
+
+    if (res?.ok) {
+      router.push("/dashboard"); // ✅ manual redirect
+    } else {
+      console.error(res?.error);
+    }
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black px-4">
-      <AuthCard
-        title="Welcome back"
-        subtitle="Sign in to continue"
-      >
+      <AuthCard title="Welcome back" subtitle="Sign in to continue">
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-1">
             <Label>Email</Label>
