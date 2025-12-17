@@ -1,5 +1,5 @@
 "use client";
-
+import { redirect } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,6 @@ import GoogleButton from "@/components/auth/GoogleButton";
 import PasswordInput from "@/components/auth/PasswordInput";
 
 export default function LoginPage() {
-  const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     const res = await signIn("credentials", {
@@ -21,7 +20,7 @@ export default function LoginPage() {
     });
 
     if (res?.ok) {
-      router.push("/dashboard"); // ✅ manual redirect
+      redirect("/dashboard");
     } else {
       console.error(res?.error);
     }
