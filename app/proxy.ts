@@ -3,6 +3,10 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function proxy(req: NextRequest) {
+  if (!process.env.NEXTAUTH_SECRET) {
+    return NextResponse.next(); // prevent crash
+  }
+
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
@@ -10,18 +14,12 @@ export async function proxy(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  // If logged-in user tries to access login → redirect
   if (pathname.startsWith("/login") && token) {
-    return NextResponse.redirect(
-      new URL("/dashboard", req.url)
-    );
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // Protect dashboard
   if (pathname.startsWith("/dashboard") && !token) {
-    return NextResponse.redirect(
-      new URL("/login", req.url)
-    );
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
